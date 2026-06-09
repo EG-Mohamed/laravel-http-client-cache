@@ -1,7 +1,27 @@
-![Laravel HTTP Client Cache](https://raw.githubusercontent.com/EG-Mohamed/laravel-http-client-cache/main/assets/og.png)
+<p align="center">
+    <img src="https://raw.githubusercontent.com/EG-Mohamed/laravel-http-client-cache/main/assets/og.png" alt="Laravel HTTP Client Cache" width="100%">
+</p>
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/eg-mohamed/laravel-http-client-cache.svg?style=flat-square)](https://packagist.org/packages/eg-mohamed/laravel-http-client-cache)
-[![Total Downloads](https://img.shields.io/packagist/dt/eg-mohamed/laravel-http-client-cache.svg?style=flat-square)](https://packagist.org/packages/eg-mohamed/laravel-http-client-cache)
+<p align="center">
+    <a href="https://packagist.org/packages/eg-mohamed/laravel-http-client-cache">
+        <img src="https://img.shields.io/packagist/v/eg-mohamed/laravel-http-client-cache?style=flat-square&cacheSeconds=300" alt="Latest Version on Packagist">
+    </a>
+    <a href="https://packagist.org/packages/eg-mohamed/laravel-http-client-cache">
+        <img src="https://img.shields.io/packagist/dt/eg-mohamed/laravel-http-client-cache?style=flat-square&cacheSeconds=300" alt="Total Downloads">
+    </a>
+    <a href="https://github.com/EG-Mohamed/laravel-http-client-cache/actions/workflows/fix-php-code-style-issues.yml">
+        <img src="https://img.shields.io/github/actions/workflow/status/EG-Mohamed/laravel-http-client-cache/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square&cacheSeconds=300" alt="Code Style">
+    </a>
+    <a href="https://github.com/EG-Mohamed/laravel-http-client-cache/actions">
+        <img src="https://img.shields.io/github/actions/workflow/status/EG-Mohamed/laravel-http-client-cache/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square" alt="Code Style">
+    </a>
+    <a href="https://packagist.org/packages/eg-mohamed/laravel-http-client-cache">
+        <img src="https://img.shields.io/packagist/php-v/eg-mohamed/laravel-http-client-cache.svg?style=flat-square" alt="PHP Version Require">
+    </a>
+    <a href="https://github.com/EG-Mohamed/laravel-http-client-cache/blob/main/LICENSE.md">
+        <img src="https://img.shields.io/github/license/EG-Mohamed/laravel-http-client-cache.svg?style=flat-square" alt="License">
+    </a>
+</p>
 
 Opt-in response caching for Laravel's HTTP client. Cache outbound API responses with a single
 fluent call — without replacing the `Http` facade or touching Laravel core.
@@ -151,17 +171,17 @@ Http::cache('products-api', 600, methods: ['GET'])
     ->get($url);
 ```
 
-| Method | Purpose |
-| --- | --- |
-| `cache($key, $ttl = null, $methods = null)` | Start a cached request. |
-| `cacheStore(?string $store)` | Choose the cache store. |
-| `cacheTags(array\|string $tags)` | Tag entries (tag-capable stores only). |
-| `cacheKeyPrefix(?string $prefix)` | Override the cache key prefix. |
-| `cacheWhen(Closure $callback)` | Cache only when the callback returns true. |
-| `cacheStatuses(array\|int\|null $statuses)` | Cache only these status codes. |
-| `cacheMethods(array\|string\|UnitEnum $methods)` | Override cacheable methods. |
-| `dontCache()` | Bypass the cache for this request. |
-| `fromCache()` *(on the response)* | Whether the response was served from cache. |
+| Method                                           | Purpose                                     |
+|--------------------------------------------------|---------------------------------------------|
+| `cache($key, $ttl = null, $methods = null)`      | Start a cached request.                     |
+| `cacheStore(?string $store)`                     | Choose the cache store.                     |
+| `cacheTags(array\|string $tags)`                 | Tag entries (tag-capable stores only).      |
+| `cacheKeyPrefix(?string $prefix)`                | Override the cache key prefix.              |
+| `cacheWhen(Closure $callback)`                   | Cache only when the callback returns true.  |
+| `cacheStatuses(array\|int\|null $statuses)`      | Cache only these status codes.              |
+| `cacheMethods(array\|string\|UnitEnum $methods)` | Override cacheable methods.                 |
+| `dontCache()`                                    | Bypass the cache for this request.          |
+| `fromCache()` *(on the response)*                | Whether the response was served from cache. |
 
 ## Configuration
 
