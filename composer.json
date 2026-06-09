@@ -34,8 +34,7 @@
     },
     "autoload": {
         "psr-4": {
-            "MohamedSaid\\HttpClientCache\\": "src/",
-            "MohamedSaid\\HttpClientCache\\Database\\Factories\\": "database/factories/"
+            "MohamedSaid\\HttpClientCache\\": "src/"
         }
     },
     "autoload-dev": {
@@ -63,10 +62,7 @@
         "laravel": {
             "providers": [
                 "MohamedSaid\\HttpClientCache\\HttpClientCacheServiceProvider"
-            ],
-            "aliases": {
-                "HttpClientCache": "MohamedSaid\\HttpClientCache\\Facades\\HttpClientCache"
-            }
+            ]
         }
     },
     "minimum-stability": "dev",
