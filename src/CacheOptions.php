@@ -34,6 +34,8 @@ class CacheOptions
 
     protected bool $serializeHeaders;
 
+    protected bool $respectNoStore;
+
     public function __construct(
         protected string $key,
         protected DateTimeInterface|DateInterval|int|array|null $ttl = null,
@@ -50,6 +52,7 @@ class CacheOptions
         $this->cacheSuccessfulOnly = (bool) $this->config('cache_successful_only', true);
         $this->cacheFailed = (bool) $this->config('cache_failed', false);
         $this->serializeHeaders = (bool) $this->config('serialize_headers', true);
+        $this->respectNoStore = (bool) $this->config('respect_no_store', false);
 
         $configStatuses = $this->config('cache_statuses');
         $this->statuses = $configStatuses === null ? null : array_map('intval', (array) $configStatuses);
@@ -131,6 +134,10 @@ class CacheOptions
 
     public function isResponseCacheable(Response $response): bool
     {
+        if ($this->respectNoStore && $this->hasNoStoreDirective($response)) {
+            return false;
+        }
+
         if ($this->when !== null && ! ($this->when)($response)) {
             return false;
         }
@@ -144,6 +151,13 @@ class CacheOptions
         }
 
         return true;
+    }
+
+    protected function hasNoStoreDirective(Response $response): bool
+    {
+        $cacheControl = strtolower($response->header('Cache-Control'));
+
+        return str_contains($cacheControl, 'no-store') || str_contains($cacheControl, 'no-cache');
     }
 
     public function ttl(): DateTimeInterface|DateInterval|int|array|null

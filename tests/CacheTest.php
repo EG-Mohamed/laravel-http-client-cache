@@ -335,4 +335,133 @@ describe('fluent api', function () {
                 && str_contains($request->url(), 'page=2');
         });
     });
+
+    it('caches when cacheWhen returns true', function () {
+        Http::fake(['*' => Http::response('x', 200)]);
+
+        Http::cache('k', 600)->cacheWhen(fn ($response) => $response->successful())->get('https://api.test/a');
+        $second = Http::cache('k', 600)->cacheWhen(fn ($response) => $response->successful())->get('https://api.test/a');
+
+        expect($second->fromCache())->toBeTrue();
+        Http::assertSentCount(1);
+    });
+
+    it('caches after chaining cache() onto an existing pending request', function () {
+        Http::fake(['*' => Http::response('x', 200)]);
+
+        Http::withHeaders(['X-Api-Key' => 'secret'])->cache('k', 600)->get('https://api.test/a');
+        $second = Http::withHeaders(['X-Api-Key' => 'secret'])->cache('k', 600)->get('https://api.test/a');
+
+        expect($second->fromCache())->toBeTrue();
+        Http::assertSentCount(1);
+    });
+});
+
+describe('cache keys', function () {
+    it('uses separate entries for different keys', function () {
+        Http::fake(['*' => Http::response('x', 200)]);
+
+        Http::cache('key-a', 600)->get('https://api.test/a');
+        $other = Http::cache('key-b', 600)->get('https://api.test/a');
+
+        expect($other->fromCache())->toBeFalse();
+        Http::assertSentCount(2);
+    });
+
+    it('uses separate entries for different urls', function () {
+        Http::fake(['*' => Http::response('x', 200)]);
+
+        Http::cache('k', 600)->get('https://api.test/a');
+        $other = Http::cache('k', 600)->get('https://api.test/b');
+
+        expect($other->fromCache())->toBeFalse();
+        Http::assertSentCount(2);
+    });
+
+    it('uses separate entries for different query params', function () {
+        Http::fake(['*' => Http::response('x', 200)]);
+
+        Http::cache('k', 600)->get('https://api.test/a', ['page' => 1]);
+        $other = Http::cache('k', 600)->get('https://api.test/a', ['page' => 2]);
+
+        expect($other->fromCache())->toBeFalse();
+        Http::assertSentCount(2);
+    });
+
+    it('uses separate entries for different post bodies', function () {
+        Http::fake(['*' => Http::response('x', 200)]);
+
+        Http::cache('k', 600, methods: ['POST'])->post('https://api.test/a', ['q' => 'first']);
+        $other = Http::cache('k', 600, methods: ['POST'])->post('https://api.test/a', ['q' => 'second']);
+
+        expect($other->fromCache())->toBeFalse();
+        Http::assertSentCount(2);
+    });
+});
+
+describe('edge cases', function () {
+    it('throws when the cache key is empty', function () {
+        Http::cache('', 600);
+    })->throws(InvalidArgumentException::class);
+
+    it('throws when the cache key is only whitespace', function () {
+        Http::cache('   ', 600);
+    })->throws(InvalidArgumentException::class);
+
+    it('treats no cacheable methods as never cacheable', function () {
+        Http::fake(['*' => Http::response('x', 200)]);
+
+        Http::cache('k', 600)->cacheMethods([])->get('https://api.test/a');
+        $second = Http::cache('k', 600)->cacheMethods([])->get('https://api.test/a');
+
+        expect($second->fromCache())->toBeFalse();
+        Http::assertSentCount(2);
+    });
+
+    it('preserves JSON payloads on a cache hit', function () {
+        Http::fake(['*' => Http::response(['items' => [1, 2, 3], 'page' => 1], 200)]);
+
+        Http::cache('k', 600)->get('https://api.test/a');
+        $hit = Http::cache('k', 600)->get('https://api.test/a');
+
+        expect($hit->fromCache())->toBeTrue();
+        expect($hit->json('items'))->toBe([1, 2, 3]);
+        expect($hit->json('page'))->toBe(1);
+    });
+
+    it('respects an upstream no-store directive when configured', function () {
+        config()->set('http-client-cache.respect_no_store', true);
+
+        Http::fake(['*' => Http::response('x', 200, ['Cache-Control' => 'no-store'])]);
+
+        Http::cache('k', 600)->get('https://api.test/a');
+        $second = Http::cache('k', 600)->get('https://api.test/a');
+
+        expect($second->fromCache())->toBeFalse();
+        Http::assertSentCount(2);
+    });
+
+    it('ignores no-store directive when respect_no_store is disabled', function () {
+        config()->set('http-client-cache.respect_no_store', false);
+
+        Http::fake(['*' => Http::response('x', 200, ['Cache-Control' => 'no-store'])]);
+
+        Http::cache('k', 600)->get('https://api.test/a');
+        $second = Http::cache('k', 600)->get('https://api.test/a');
+
+        expect($second->fromCache())->toBeTrue();
+        Http::assertSentCount(1);
+    });
+
+    it('falls back to the default_ttl from config', function () {
+        config()->set('http-client-cache.default_ttl', 600);
+
+        Http::fake(['*' => Http::response('x', 200)]);
+
+        Http::cache('k')->get('https://api.test/a');
+        $second = Http::cache('k')->get('https://api.test/a');
+
+        expect($second->fromCache())->toBeTrue();
+        Http::assertSentCount(1);
+    });
 });
