@@ -1,4 +1,4 @@
-![Laravel HTTP Client Cache](https://raw.githubusercontent.com/eg-mohamed/laravel-http-client-cache/main/assets/og.png)
+![Laravel HTTP Client Cache](https://raw.githubusercontent.com/EG-Mohamed/laravel-http-client-cache/main/assets/og.png)
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/eg-mohamed/laravel-http-client-cache.svg?style=flat-square)](https://packagist.org/packages/eg-mohamed/laravel-http-client-cache)
 [![Total Downloads](https://img.shields.io/packagist/dt/eg-mohamed/laravel-http-client-cache.svg?style=flat-square)](https://packagist.org/packages/eg-mohamed/laravel-http-client-cache)
